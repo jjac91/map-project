@@ -3,6 +3,7 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_KEY;
 import "./Map.css";
+import { useUpdateEffect } from "react-use";
 import rawData from "../../data/income.json";
 import updatePercentiles from "../../utils";
 
@@ -48,10 +49,9 @@ function Map() {
     setYear(newYear);
   };
 
-
   useEffect(() => {
     if (map.current) return;
-    console.log("year changed")
+    console.log("year changed");
 
     //makes new map
     map.current = new mapboxgl.Map({
@@ -86,9 +86,9 @@ function Map() {
               [8, "#d53e4f"],
             ],
           },
+          "fill-color-transition":{duration: 10000},
           "fill-opacity": 0.8,
         },
-        metadata: { name: "Rate Incarcerated Population per Capita" },
       });
 
       map.current.addLayer({
@@ -127,6 +127,13 @@ function Map() {
         tooltipRef.current.remove();
       }
     });
+  }, [year]);
+
+  useUpdateEffect(() => {
+    map.current.getSource("mapSource").setData(data, { transition: {
+      duration: 500, // Transition duration in milliseconds
+      delay: 0 // Delay before the transition starts in milliseconds
+    }});
   }, [year]);
 
   return (
